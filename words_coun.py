@@ -70,15 +70,15 @@ def visual_result(result):
     plt.xlabel('Кількість')
     plt.ylabel('Слово')
     plt.title('10 найпопулярніших слів')
-    # plt.gca().invert_yaxis()
+    plt.gca().invert_yaxis()
     plt.show()
 
 
 if __name__ == '__main__':
     # Вхідний текст для обробки
-    url = "https://gutenberg.net.au/ebooks01/0100021.txt"
+    url = "https://gutenberg.net.au/ebooks/fr100218.html" #url = "https://gutenberg.net.au/ebooks01/0100021.txt"
     # Виконання MapReduce на вхідному тексті
-    search_words = None #['brother', 'Brother', 'Big', 'big', 'hate', "Hate", 'peace']
+    search_words = ['Grey', 'grey', 'beauty', 'murder', 'hate', "painter", 'picture']
     result = asyncio.run(map_reduce(url, search_words))
 
     print("Результат підрахунку слів:", result)
