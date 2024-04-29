@@ -1,6 +1,7 @@
 import string
 import asyncio
 from collections import defaultdict, Counter
+from concurrent.futures import ThreadPoolExecutor
 
 import httpx
 from matplotlib import pyplot as plt
@@ -49,13 +50,15 @@ async def map_reduce(text, search_words=None):
             words = [word for word in words if word in search_words]  # filter
 
         # Паралельний Мапінг
-        mapped_values = await asyncio.gather(*[map_function(word) for word in words])
+        with ThreadPoolExecutor() as executor:
+            mapped_values = await asyncio.gather(*[map_function(word) for word in words])
 
         # Крок 2: Shuffle
         shuffled_values = shuffle_function(mapped_values)
 
         # Паралельна Редукція
-        reduced_values = await asyncio.gather(*[reduce_function(key_values) for key_values in shuffled_values])
+        with ThreadPoolExecutor() as executor:
+            reduced_values = await asyncio.gather(*[reduce_function(key_values) for key_values in shuffled_values])
 
         return dict(reduced_values)
     else:
@@ -76,9 +79,9 @@ def visual_result(result):
 
 if __name__ == '__main__':
     # Вхідний текст для обробки
-    url = "https://gutenberg.net.au/ebooks/fr100218.html" #url = "https://gutenberg.net.au/ebooks01/0100021.txt"
+    url = "https://gutenberg.net.au/ebooks01/0100021.txt"
     # Виконання MapReduce на вхідному тексті
-    search_words = ['Grey', 'grey', 'beauty', 'murder', 'hate', "painter", 'picture']
+    search_words = ['brother', 'Brother', 'Big', 'big', 'hate', "Hate", 'peace']
     result = asyncio.run(map_reduce(url, search_words))
 
     print("Результат підрахунку слів:", result)
